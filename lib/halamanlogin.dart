@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'login_controller.dart';
+import 'page_controller.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -9,7 +9,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
-  late LoginController _controller;
+  late pageController _controller;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage>
     super.initState();
 
     // Initialize controller
-    _controller = LoginController();
+    _controller = pageController();
     _controller.setUpdateCallback(() {
       if (mounted) setState(() {});
     });
