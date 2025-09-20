@@ -9,7 +9,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
-  late pageController _controller;
+  late Controller _controller;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage>
     super.initState();
 
     // Initialize controller
-    _controller = pageController();
+    _controller = Controller();
     _controller.setUpdateCallback(() {
       if (mounted) setState(() {});
     });
@@ -52,11 +52,27 @@ class _LoginPageState extends State<LoginPage>
     super.dispose();
   }
 
+  // REVISED: Handle login with proper error handling
   Future<void> _handleLogin() async {
-    final success = await _controller.handleLogin();
+    try {
+      final success = await _controller.handleLogin();
 
-    if (success) {
-      _controller.showSuccessDialog(context);
+      if (success) {
+        // Show success dialog (which will handle navigation)
+        _controller.showSuccessDialog(context);
+      } else {
+        // Show error dialog
+        _controller.showErrorDialog(
+          context,
+          'Email atau password salah. Silakan coba lagi.',
+        );
+      }
+    } catch (e) {
+      // Handle any unexpected errors
+      _controller.showErrorDialog(
+        context,
+        'Terjadi kesalahan. Silakan periksa koneksi internet Anda.',
+      );
     }
   }
 
@@ -105,6 +121,8 @@ class _LoginPageState extends State<LoginPage>
                             _buildDivider(),
                             SizedBox(height: 24),
                             _buildRegisterButton(),
+                            SizedBox(height: 16),
+                            _buildTestCredentials(), // Added for testing
                           ],
                         ),
                       ),
@@ -241,7 +259,7 @@ class _LoginPageState extends State<LoginPage>
                 ),
               )
             : Text(
-                'Login',
+                'LOGIN',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -286,6 +304,39 @@ class _LoginPageState extends State<LoginPage>
             letterSpacing: 1.2,
           ),
         ),
+      ),
+    );
+  }
+
+  // Added for testing purposes
+  Widget _buildTestCredentials() {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue[200]!),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Test Credentials',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue[700],
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            'Email: adrian@test.com',
+            style: TextStyle(fontSize: 11, color: Colors.blue[600]),
+          ),
+          Text(
+            'Password: 123456',
+            style: TextStyle(fontSize: 11, color: Colors.blue[600]),
+          ),
+        ],
       ),
     );
   }

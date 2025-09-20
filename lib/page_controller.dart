@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class pageController {
+class Controller {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -8,9 +8,15 @@ class pageController {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
+  // Settings properties
+  bool _notifikasi = true;
+  String _bahasa = 'Indonesia';
+
   // Getters
   bool get isLoading => _isLoading;
   bool get obscurePassword => _obscurePassword;
+  bool get notifikasi => _notifikasi;
+  String get bahasa => _bahasa;
 
   // Private callback untuk update UI
   VoidCallback? _updateUI;
@@ -23,6 +29,17 @@ class pageController {
   // Toggle visibility password
   void togglePasswordVisibility() {
     _obscurePassword = !_obscurePassword;
+    _updateUI?.call();
+  }
+
+  // Settings methods
+  void toggleNotifikasi() {
+    _notifikasi = !_notifikasi;
+    _updateUI?.call();
+  }
+
+  void setBahasa(String bahasa) {
+    _bahasa = bahasa;
     _updateUI?.call();
   }
 
@@ -48,7 +65,7 @@ class pageController {
     return null;
   }
 
-  // Handle login process
+  // Handle login process - REVISED WITH NAVIGATION
   Future<bool> handleLogin() async {
     if (!formKey.currentState!.validate()) {
       return false;
@@ -108,10 +125,161 @@ class pageController {
     );
   }
 
-  // Show success dialog
+  // Settings handlers
+  void handleNotifikasiToggle(BuildContext context) {
+    toggleNotifikasi();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _notifikasi ? 'Notifikasi diaktifkan' : 'Notifikasi dinonaktifkan',
+        ),
+        backgroundColor: _notifikasi ? Colors.green : Colors.orange,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void handleBahasaSelection(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Pilih Bahasa'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text('Indonesia'),
+                leading: Radio<String>(
+                  value: 'Indonesia',
+                  groupValue: _bahasa,
+                  onChanged: (String? value) {
+                    if (value != null) {
+                      setBahasa(value);
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Bahasa diubah ke Indonesia'),
+                          backgroundColor: Colors.blue,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('English'),
+                leading: Radio<String>(
+                  value: 'English',
+                  groupValue: _bahasa,
+                  onChanged: (String? value) {
+                    if (value != null) {
+                      setBahasa(value);
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Language changed to English'),
+                          backgroundColor: Colors.blue,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Batal'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void handleTentangAplikasi(BuildContext context) {
+    showAboutDialog(
+      context: context,
+      applicationName: 'Aplikasi Sederhana',
+      applicationVersion: '1.0.0',
+      applicationLegalese: '© 2024 Developer',
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 16),
+          child: Text(
+            'Aplikasi Flutter sederhana dengan 3 halaman utama dan tema dinamis.',
+          ),
+        ),
+      ],
+    );
+  }
+
+  void handleBantuan(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Fitur bantuan akan segera hadir!'),
+        backgroundColor: Colors.blue,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void handleLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.logout, color: Colors.orange),
+              SizedBox(width: 8),
+              Text('Konfirmasi Logout'),
+            ],
+          ),
+          content: Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                Navigator.pushReplacementNamed(
+                  context,
+                  '/login',
+                ); // Back to login
+
+                // Clear form data
+                emailController.clear();
+                passwordController.clear();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Logout berhasil'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // REVISED: Show success dialog with navigation
   void showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
+      barrierDismissible: false, // Prevent closing by tapping outside
       builder: (context) => AlertDialog(
         title: Row(
           children: [
@@ -123,16 +291,22 @@ class pageController {
         content: Text('Selamat datang, ${emailController.text}'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close dialog
+              Navigator.pushReplacementNamed(
+                context,
+                '/main',
+              ); // Navigate to main
+            },
             style: TextButton.styleFrom(foregroundColor: Color(0xFF667eea)),
-            child: Text('OK'),
+            child: Text('LANJUTKAN'),
           ),
         ],
       ),
     );
   }
 
-  // Show error dialog
+  // Show error dialog with retry option
   void showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -149,7 +323,7 @@ class pageController {
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('Coba Lagi'),
+            child: Text('COBA LAGI'),
           ),
         ],
       ),
