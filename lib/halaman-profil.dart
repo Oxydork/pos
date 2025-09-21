@@ -55,12 +55,12 @@ class ProfilePage extends StatelessWidget {
             SizedBox(height: 16),
 
             Text(
-              'John Doe',
+              'Adrian A',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
 
             Text(
-              'john.doe@example.com',
+              'adrian.a@example.com',
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
 
@@ -94,13 +94,13 @@ class ProfilePage extends StatelessWidget {
                     _buildProfileItem(
                       Icons.person,
                       'Nama Lengkap',
-                      'John Doe',
+                      'Adrian A',
                       Colors.green,
                     ),
                     _buildProfileItem(
                       Icons.email,
                       'Email',
-                      'john.doe@example.com',
+                      'adrian.a@example.com',
                       Colors.green,
                     ),
                     _buildProfileItem(
