@@ -54,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.settings_outlined),
               activeIcon: Icon(Icons.settings),
-              label: 'Pengaturan',
+              label: 'Pengaturan' ,
             ),
           ],
         ),
@@ -74,7 +74,7 @@ class _MainScreenState extends State<MainScreen> {
               Text('Keluar Aplikasi'),
             ],
           ),
-          content: Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
+          content: Text('Apakah Kamu yakin ingin keluar dari aplikasi?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
